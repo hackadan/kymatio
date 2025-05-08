@@ -19,7 +19,7 @@ def harmonic_scattering2d(x, filters, rotation_covariant, L, J, max_order, backe
     ifft = backend.ifft
     cdgmm2d = backend.cdgmm2d
     modulus = backend.modulus
-    modulus_rotation = backend.modulus_rotation
+    # modulus_rotation = backend.modulus_rotation
 
     # out_S_0, out_S_1, out_S_2 = [], [], []
 
@@ -73,11 +73,17 @@ def harmonic_scattering2d(x, filters, rotation_covariant, L, J, max_order, backe
     # Stack the orders (along the j axis) if needed.
     S = s_order_1
     if max_order == 2:
+        # print("max order == 2")
         S = [x + y for x, y in zip(S, s_order_2)]
 
-    # Invert (ell, m × j) ordering to (m × j, ell).
-    S = [x for y in zip(*S) for x in y]
+    # print(S)
+    J_total = len(S[0])
+    
+    S_transposed = [[S[l][j] for l in range(L+1)] for j in range(J_total)]
 
+    S = [stack(S_transposed[j]) for j in range(J_total)]  # [(B, L+1, 6),]
+
+    # S_batched = tf.stack(S_jl, axis=1)  # shape: (B, J_total, L+1, 6)
 
     # out_S = []
     # out_S.extend(out_S_0)
@@ -86,6 +92,7 @@ def harmonic_scattering2d(x, filters, rotation_covariant, L, J, max_order, backe
 
     
     S = stack(S)
+    
 
     # warnings.warn(str(S.shape)) 
     # out_S = stack((s_order_1, s_order_2), dim=-1)

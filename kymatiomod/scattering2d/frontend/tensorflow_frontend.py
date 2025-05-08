@@ -135,15 +135,19 @@ class HarmonicScatteringTensorFlow2D(ScatteringTensorFlow, HarmonicScatteringBas
                              L=self.L, J=self.J, max_order=self.max_order,
                              backend=self.backend, averaging=self.averaging)
 
-            # print(S)
-            S = tf.reshape(S, tuple((tf.shape(S)[0], tf.shape(S)[1] // (L + 1), (L + 1))) + tuple(tf.shape(S)[2:]))
+            # print(str(S))
+            # print(f"max order = {self.max_order}")
+            # S = tf.reshape(S, (batch_shape, ))
 
 
-            scattering_shape = tf.shape(S)[1:]
+            # scattering_shape = tf.shape(S)[1:]
+            # S = tf.reshape(S, tuple((S.shape[0], S.shape[1] // (L + 1), (L + 1))) + tuple(S.shape[2:]))
 
-            S = tf.reshape(S, tf.concat((batch_shape, scattering_shape), 0))
+            # S = tf.reshape(S, tf.concat((batch_shape, scattering_shape), 0))
 
             # S = tf.reshape(S, new_shape)
+
+            S = tf.convert_to_tensor(S)
 
             return S
 
