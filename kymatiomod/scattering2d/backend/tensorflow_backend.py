@@ -111,33 +111,7 @@ class TensorFlowBackend2D(TensorFlowBackend):
         out = tf.reduce_mean(y, axis=(1, 3))
         return out
         
-    @staticmethod
-    def modulus_rotation(x, module):
-        """Used for computing rotation invariant scattering transform coefficents.
 
-            Parameters
-            ----------
-            x : tensor
-                Size (batchsize, M, N, O).
-            module : tensor
-                Tensor that holds the overall sum.
-
-            Returns
-            -------
-            output : tensor
-                Tensor of the same size as input_array. It holds the output of
-                the operation::
-
-                $\\sqrt{\\sum_m (\\text{input}_\\text{array} \\star \\psi_{j,l,m})^2)}$
-
-                which is covariant to 3D translations and rotations.
-
-        """
-        if module is None:
-            module = tf.abs(x) ** 2
-        else:
-            module = module ** 2 + tf.abs(x) ** 2
-        return tf.sqrt(module)
 
     @staticmethod
     def compute_integrals(input_array, integral_powers):
@@ -190,8 +164,8 @@ class TensorFlowBackend2D(TensorFlowBackend):
         # if B.ndim != 3:
         #     raise RuntimeError('The dimension of the second input must be 3.')
 
-        Cr = tf.cast(tf.math.real(A) * np.real(B) - tf.math.imag(A) * np.imag(B), tf.complex64)
-        Ci = tf.cast(tf.math.real(A) * np.imag(B) + tf.math.imag(A) * np.real(B), tf.complex64)
+        Cr = tf.cast(tf.math.real(A) * tf.math.real(B) - tf.math.imag(A) * tf.math.imag(B), tf.complex64)
+        Ci = tf.cast(tf.math.real(A) * tf.math.imag(B) + tf.math.imag(A) * tf.math.real(B), tf.complex64)
 
         return Cr + 1.0j * Ci
 

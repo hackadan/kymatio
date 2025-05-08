@@ -90,8 +90,6 @@ def harmonic_scattering2d(x, filters, rotation_covariant, L, J, max_order, backe
     # warnings.warn(str(S.shape)) 
     # out_S = stack((s_order_1, s_order_2), dim=-1)
     # S = stack(S)
-    # S = tf.reshape(S, ((S.shape[0], S.shape[1] // (L + 1), (L + 1))) + (S.shape[2:]))
-
 
     return S 
 

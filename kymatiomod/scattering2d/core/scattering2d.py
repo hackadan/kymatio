@@ -19,7 +19,7 @@ def harmonic_scattering2d(x, filters, rotation_covariant, L, J, max_order, backe
     ifft = backend.ifft
     cdgmm2d = backend.cdgmm2d
     modulus = backend.modulus
-    modulus_rotation = backend.modulus_rotation
+    # modulus_rotation = backend.modulus_rotation
 
     # out_S_0, out_S_1, out_S_2 = [], [], []
 
@@ -86,12 +86,11 @@ def harmonic_scattering2d(x, filters, rotation_covariant, L, J, max_order, backe
 
     
     S = stack(S)
+    
 
     # warnings.warn(str(S.shape)) 
     # out_S = stack((s_order_1, s_order_2), dim=-1)
     # S = stack(S)
-    # S = tf.reshape(S, ((S.shape[0], S.shape[1] // (L + 1), (L + 1))) + (S.shape[2:]))
-
 
     return S 
 

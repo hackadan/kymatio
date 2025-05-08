@@ -2,6 +2,10 @@ import scipy.fft
 import warnings
 import numpy as np
 
+def double_factorial(i):
+    """Computes the double factorial of an integer."""
+    return 1 if (i < 1) else np.prod(np.arange(i, 0, -2))
+
 
 def compute_padding(M, N, J):
     """

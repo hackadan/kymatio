@@ -136,9 +136,12 @@ class HarmonicScatteringTensorFlow2D(ScatteringTensorFlow, HarmonicScatteringBas
                              backend=self.backend, averaging=self.averaging)
 
             # print(S)
+            S = tf.reshape(S, tuple((tf.shape(S)[0], tf.shape(S)[1] // (L + 1), (L + 1))) + tuple(tf.shape(S)[2:]))
 
-            scattering_shape = tf.shape(S)[-2:]
-            new_shape = tf.concat((batch_shape, scattering_shape), 0)
+
+            scattering_shape = tf.shape(S)[1:]
+
+            S = tf.reshape(S, tf.concat((batch_shape, scattering_shape), 0))
 
             # S = tf.reshape(S, new_shape)
 

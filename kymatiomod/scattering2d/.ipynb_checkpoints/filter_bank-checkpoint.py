@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.fft import fft2, ifft2
-from .utils import sqrt
+from scipy.special import factorial
+from .utils import sqrt, double_factorial
 
 def circular_harmonic_filter_bank(M, N, J, L, sigma_0, fourier=True):
     """
@@ -64,58 +65,39 @@ def circular_harmonic_2d(M, N, sigma, l, fourier=True):
             the 2l+1 wavelets of order (l , m) with -l <= m <= l.
             It is ifftshifted such that the origin is at the point [., 0, 0, 0]
     """
-    circ_harm = np.zeros((M, N), np.complex64)
     grid = np.fft.ifftshift(
         np.mgrid[-M // 2 : -M // 2 + M,
-                 -N // 2:-N // 2 + N].astype('float32'),
-        axes=(1,2))
-    _sigma = sigma
+                 -N // 2 : -N // 2 + N].astype('float32'),
+        axes=(1, 2)
+    )
 
     if fourier:
         grid[0] *= 2 * np.pi / M
         grid[1] *= 2 * np.pi / N
         _sigma = 1. / sigma
+    else:
+        _sigma = sigma
 
-    # r-coeffs for the scaling of the solution
     r_square = (grid ** 2).sum(0)
-    r_power_l = sqrt(r_square ** l)
+    r_power_l = np.power(r_square, l / 2)
 
-    gaussian = np.exp(-0.5 * r_square / _sigma**2).astype('complex64')
+    gaussian = np.exp(-0.5 * r_square / _sigma ** 2).astype(np.complex64)
 
     if l == 0:
-        if fourier:
-            return gaussian.reshape((1, M, N))
-        return gaussian.reshape((1, M, N)) / (
-                                          (2 * np.pi) * _sigma ** 2)
-
-    polynomial_gaussian = r_power_l * gaussian / _sigma ** l
-    # polynomial_gaussian = gaussian
-
-    # polar, azimuthal = get_3d_angles(grid)
-    theta = np.arctan2(grid[0], grid[1])
-
-    # for i_m, m in enumerate(range(-l, l + 1)):
-        #i.e. 1j amounts to the complex-coeff i, m is each candidate frequency, theta is all angles within the image/grid.
-    circ_harm = np.exp(1j * l * theta) * polynomial_gaussian
-
-    # if l % 2 == 0:
-    #     norm_factor = 1. / (2 * np.pi * np.sqrt(l + 0.5) * 
-    #                                         double_factorial(l + 1))
-    # else :
-    #     norm_factor = 1. / (2 ** (0.5 * ( l + 3)) * 
-    #                         np.sqrt(np.pi * (2 * l + 1)) * 
-    #                         factorial((l + 1) / 2))
-
-    norm_factor = 1 / (2 * np.pi)
-    
-    if fourier:
-        norm_factor *= (2 * np.pi) * (-1j) ** l
+        wavelet = gaussian
     else:
-        norm_factor /= _sigma ** 2
+        theta = np.arctan2(grid[0], grid[1])
+        angular = np.exp(1j * l * theta)
+        wavelet = r_power_l * angular * gaussian / (_sigma ** l)
 
-    circ_harm *= norm_factor
+    # Normalize to unit L2 norm
+    norm = np.sqrt(np.sum(np.abs(wavelet)**2))
 
-    return circ_harm
+    if fourier:
+        norm *= (M * N)
+    wavelet /= norm
+
+    return wavelet
     
 
 def filter_bank(M, N, J, L=8):
@@ -229,7 +211,7 @@ def gaussian_2d(M, N, sigma, fourier=True):
 
     gaussian = np.exp(-0.5 * (grid ** 2).sum(0) / _sigma ** 2)
     if not fourier:
-        gaussian /= (2 * np.pi) ** 1.5 * _sigma ** 3
+        gaussian /= (2 * np.pi) * _sigma ** 2
 
     return gaussian
     
