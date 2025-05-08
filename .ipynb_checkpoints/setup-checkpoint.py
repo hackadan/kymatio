@@ -5,7 +5,7 @@ import importlib
 from setuptools import setup, find_packages
 
 # Constants
-DISTNAME = 'kymatio'
+DISTNAME = 'kymatiomod'
 DESCRIPTION = 'Wavelet scattering transforms in Python with GPU acceleration'
 URL = 'https://www.kymat.io'
 LICENSE = 'BSD-3-Clause'
@@ -19,7 +19,7 @@ with open('README.md', encoding='utf8') as f:
 
 # Parse version.py
 kymatio_version_spec = importlib.util.spec_from_file_location(
-    'kymatio_version', 'kymatio/version.py')
+    'kymatio_version', 'kymatiomod/version.py')
 kymatio_version_module = importlib.util.module_from_spec(kymatio_version_spec)
 kymatio_version_spec.loader.exec_module(kymatio_version_module)
 VERSION = kymatio_version_module.version
