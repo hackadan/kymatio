@@ -152,6 +152,7 @@ class HarmonicScatteringTensorFlow2D(ScatteringTensorFlow, HarmonicScatteringBas
             return S
 
 
+
 HarmonicScatteringTensorFlow2D._document()
 
 ScatteringTensorFlow2D._document()
